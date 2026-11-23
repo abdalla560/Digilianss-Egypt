@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digitals EGYPT | الاستثمار والضرائب والجمارك</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.ticker{display:flex;gap:24px;overflow-x:auto;background:#00000055;padding:10px 16px;border:1px solid var(--line);border-radius:12px;margin-bottom:20px}
+.ticker span{white-space:nowrap;font-family:Consolas,monospace;font-size:.9rem}
+.glob{color:#eef3ff;background:linear-gradient(135deg,#1e3799,#0c2461);border-color:#4a69bd}
+.spark{width:100%;height:150px;display:block;margin:8px 0}
+td.r,th.r{text-align:end}
+</style>
+<style>
+.cmp{border-top:5px solid var(--c,var(--brand))}
+.cmp h3{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.cmp .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:0 24px}
+.cmp ul{margin:4px 0 0;padding-inline-start:20px;color:var(--muted)}
+.taxbox{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:18px}
+</style>
+</head>
+<body>
+<main class="page" id="main">
+  <div class="crumbs"><a href="index.html">الرئيسية</a> › المال والاستثمار › الضرائب والاستثمار</div>
+  <div class="page-head"><div><h1>🧾 مركز الضرائب والشركات والاستثمار</h1><p>ضرائبك • شركاتك • البورصة • الجمارك</p></div></div>
+  <div class="tabs" role="tablist" aria-label="أقسام المركز">
+    <button role="tab" id="t-tax" aria-selected="true" aria-controls="p-tax">🧾 ضرائبي</button>
+    <button role="tab" id="t-companies" aria-selected="false" aria-controls="p-companies">🏢 شركاتي</button>
+    <button role="tab" id="t-svc" aria-selected="false" aria-controls="p-svc">🗂️ خدمات الضرائب</button>
+    <button role="tab" id="t-invest" aria-selected="false" aria-controls="p-invest">📈 الاستثمار والجمارك</button>
+  </div>
+
+  <section id="p-tax" role="tabpanel">
+    <div class="hero-sum" id="taxSum"></div>
+    <div class="taxbox">
+      <section class="box accent" style="--c:var(--info)" aria-labelledby="h-inc"><h3 id="h-inc">💼 ضريبة الدخل (الإقرار السنوي)</h3><div id="incBox"></div></section>
+      <section class="box accent" style="--c:var(--warn)" aria-labelledby="h-prop"><h3 id="h-prop">🏠 الضريبة العقارية</h3><div id="propBox"></div></section>
+      <section class="box accent" style="--c:var(--ok)" aria-labelledby="h-int"><h3 id="h-int">🏦 ضريبة الفوائد البنكية (مربوطة بالبنوك)</h3><div id="intBox"></div></section>
+    </div>
+    <div class="btn-row"><button class="button" id="payAllTax" type="button">💳 سداد كل المستحقات الضريبية</button><button class="button green" id="taxCert" type="button">📜 شهادة براءة ذمة ضريبية</button><a class="button ghost" href="banks.html#tax">الربط مع البنوك</a></div>
+  </section>
+
+  <section id="p-companies" role="tabpanel" hidden>
+    <div class="hero-sum" id="cmpSum"></div>
+    <div class="btn-row" style="margin:0 0 16px"><button class="button" id="addCmp" type="button">➕ إضافة شركة</button></div>
+    <div class="stack" id="cmpList"></div>
+  </section>
+
+  <section id="p-svc" role="tabpanel" hidden><div id="svcGrid"></div><h3 class="section-title">📨 متابعة الطلبات</h3><div id="reqs"></div></section>
+
+  <section id="p-invest" role="tabpanel" hidden>
+  <div class="ticker" role="marquee" aria-label="أسعار السوق التجريبية">
+    <span>EGX30: <b class="ok">28,450.12 ▲ 1.2%</b></span><span>S&amp;P 500: <b class="ok">5,120.44 ▲ 0.8%</b></span><span>NASDAQ: <b class="bad">16,200.10 ▼ 0.3%</b></span><span>BTC/USD: <b class="ok">$64,250 ▲ 2.5%</b></span><span>USD/EGP: <b id="fx"></b></span><small>(بيانات تجريبية)</small>
+  </div>
+
+  <div class="split">
+    <div class="stack">
+      <section class="box accent" aria-labelledby="eg"><h3 id="eg">🇪🇬 المحفظة المحلية (EGX)</h3>
+        <p>إجمالي القيمة السوقية: <b id="egT"></b> جم</p><svg class="spark" id="spark" viewBox="0 0 300 100" preserveAspectRatio="none" role="img" aria-label="رسم بياني لأداء المحفظة"></svg>
+        <div class="table-wrap"><table><thead><tr><th>السهم</th><th class="r">الكمية</th><th class="r">الربح/الخسارة</th></tr></thead><tbody id="egR"></tbody></table></div></section>
+      <section class="box glob" aria-labelledby="gl"><h3 id="gl">🇺🇸 المحفظة العالمية (NYSE / NASDAQ)</h3>
+        <p>إجمالي القيمة السوقية: <b id="glT"></b></p>
+        <div class="table-wrap"><table><thead><tr><th>السهم</th><th class="r">الكمية</th><th class="r">الربح/الخسارة</th></tr></thead><tbody id="glR"></tbody></table></div>
+        <div class="btn-row"><button class="button" id="trade" type="button">فتح منصة التداول العالمي</button></div></section>
+    </div>
+
+    <aside class="stack">
+      <section class="box accent" style="--c:var(--info)" aria-labelledby="cu"><h3 id="cu">⚓ الجمارك (ACIA)</h3><div id="customs"></div></section>
+    </aside>
+  </div>
+  </section>
+</main>
+<script src="assets/js/qr.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/gov.js"></script>
+<script src="assets/js/catalog.js"></script>
+<script>
+ID.ready(function (u, D) {
+  const $ = id => document.getElementById(id), f = D.finance(), st = ID.state(), e = ID.esc, ORG = 'مصلحة الضرائب المصرية', GL = Gov.CAT.tax;
+  const hs = (c, l, v) => '<div class="st" style="--c:' + c + '"><small>' + l + '</small><b>' + v + '</b></div>';
+
+  /* ---------------- ضرائبي ---------------- */
+  function renderTax() {
+    const T = Gov.taxProfile(), ad = u.age >= 18;
+    $('taxSum').innerHTML = hs('var(--brand)', 'رقم التسجيل الضريبي', '<span class="mono" style="font-size:1.1rem">' + T.no + '</span>') + hs('var(--info)', 'الدخل السنوي ' + T.yr + ' (تقديري)', ID.fmt(T.salary) + ' جم') + hs(T.totalDue ? 'var(--bad)' : 'var(--ok)', 'إجمالي المستحق', ID.fmt(T.totalDue) + ' جم') + hs('var(--ok)', 'الموقف الضريبي', T.totalDue ? 'يوجد مستحقات' : 'مسدد بالكامل');
+    $('incBox').innerHTML = !ad ? '<p class="muted">الإقرار الضريبي متاح لمن بلغ 18 سنة.</p>' : '<div class="kv"><span>الدخل السنوي</span><b>' + ID.fmt(T.salary) + ' جم</b></div><div class="kv"><span>الضريبة المحتسبة (شرائح 2025)</span><b>' + ID.fmt(T.incTax) + ' جم</b></div><div class="kv"><span>الحالة</span>' + (T.paidInc ? '<span class="pill ok">مسدد</span>' : '<span class="pill warn">مستحق</span>') + '</div>' + (T.paidInc ? '' : '<div class="btn-row"><button class="button sm" id="payInc" type="button">تقديم الإقرار وسداد الضريبة</button></div>');
+    $('propBox').innerHTML = !T.props.length ? '<p class="muted">لا توجد عقارات مسجلة عليك.</p>' : T.props.map(p => '<div class="kv"><span>' + e(p.name) + '</span><b>' + ID.fmt(p.tax) + ' جم</b></div>').join('') + '<div class="kv"><span>الإجمالي / الحالة</span><b>' + ID.fmt(T.propTax) + ' جم ' + (T.paidProp ? '<span class="pill ok">مسدد</span>' : '<span class="pill warn">مستحق</span>') + '</b></div>' + (T.paidProp ? '' : '<div class="btn-row"><button class="button sm" id="payProp" type="button">سداد الضريبة العقارية</button></div>');
+    $('intBox').innerHTML = !T.accts.length ? '<p class="muted">لا توجد حسابات ذات فوائد.</p>' : T.accts.map(a => '<div class="kv"><span>' + e(a.bank) + ' ' + a.mask + '</span><b>' + ID.fmt(a.interest) + ' جم</b></div>').join('') + '<div class="kv"><span>ضريبة 20% مخصومة من المنبع</span><b>' + ID.fmt(T.interestTax) + ' جم</b></div><small>تُخصم تلقائياً من البنك — لا يلزمك سداد إضافي.</small>';
+    const pi = $('payInc'), pp = $('payProp');
+    if (pi) pi.onclick = () => payTax(T.incTax, 'سداد ضريبة الدخل ' + T.yr, T.kInc, [['السنة الضريبية', T.yr], ['الدخل السنوي', ID.fmt(T.salary) + ' جم']]);
+    if (pp) pp.onclick = () => payTax(T.propTax, 'سداد الضريبة العقارية ' + T.yr, T.kProp, T.props.map(p => [p.name, ID.fmt(p.tax) + ' جم']));
+    $('payAllTax').disabled = T.totalDue === 0;
+  }
+  function payTax(amount, title, key, details) {
+    ID.confirm('تأكيد السداد', 'سيتم خصم ' + ID.fmt(amount) + ' جم من حسابك الجاري: ' + title + '.', 'ادفع الآن').then(ok => {
+      if (!ok) return; const r = ID.pay(amount, title, { service: title, org: ORG, details }); if (!r.ok) return ID.toast(r.err, true);
+      st.paid[key] = Date.now(); ID.save(); renderTax();
+    });
+  }
+  $('payAllTax').onclick = () => { const T = Gov.taxProfile(); if (!T.totalDue) return;
+    const det = []; if (T.dueInc) det.push(['ضريبة الدخل ' + T.yr, ID.fmt(T.dueInc) + ' جم']); if (T.dueProp) det.push(['الضريبة العقارية ' + T.yr, ID.fmt(T.dueProp) + ' جم']);
+    ID.confirm('سداد كل المستحقات', 'إجمالي ' + ID.fmt(T.totalDue) + ' جم سيُخصم من حسابك الجاري.', 'ادفع الآن').then(ok => { if (!ok) return; const r = ID.pay(T.totalDue, 'سداد المستحقات الضريبية ' + T.yr, { service: 'سداد المستحقات الضريبية', org: ORG, details: det }); if (!r.ok) return ID.toast(r.err, true); if (T.dueInc) st.paid[T.kInc] = Date.now(); if (T.dueProp) st.paid[T.kProp] = Date.now(); ID.save(); renderTax(); }); };
+  $('taxCert').onclick = () => { const T = Gov.taxProfile(); if (T.totalDue > 0) return ID.toast('لا يمكن إصدار براءة الذمة: يوجد مستحقات بقيمة ' + ID.fmt(T.totalDue) + ' جم.', true); Gov.run({ id: 'tc', t: 'شهادة براءة ذمة ضريبية', d: 'شهادة بخلو الذمة من أي مستحقات ضريبية.', fee: 50, org: ORG, doc: 'taxcert' }, { refresh: renderTax }); };
+
+  /* ---------------- الشركات ---------------- */
+  function renderCmp() {
+    const L = st.companies.map(c => Gov.genCompany(c.name, c.tax)), totM = L.reduce((s, c) => s + c.market, 0), totD = L.reduce((s, c) => s + c.due, 0);
+    $('cmpSum').innerHTML = hs('var(--brand)', 'عدد الشركات', L.length) + hs('var(--ok)', 'إجمالي القيمة التسويقية', ID.fmt(totM) + ' جم') + hs(totD ? 'var(--bad)' : 'var(--ok)', 'إجمالي الضرائب المستحقة', ID.fmt(totD) + ' جم');
+    $('cmpList').innerHTML = L.length ? L.map((c, i) => '<section class="box cmp" style="--c:' + (c.due ? 'var(--bad)' : 'var(--ok)') + '"><h3><span>🏢 ' + e(c.name) + ' <small>(' + e(c.form) + ')</small></span><span class="pill ' + (c.due ? 'warn' : 'ok') + '">' + c.status + '</span></h3><div class="cols">' +
+      '<div><div class="kv"><span>الرقم الضريبي</span><b class="mono">' + c.taxFmt + '</b></div><div class="kv"><span>السجل التجاري</span><b class="mono">' + c.cr + '</b></div><div class="kv"><span>النشاط</span><b>' + e(c.sector) + '</b></div><div class="kv"><span>سنة التأسيس</span><b>' + c.est + '</b></div><div class="kv"><span>المقر</span><b>' + e(c.addr) + '</b></div><div class="kv"><span>عدد العاملين</span><b>' + c.emp + '</b></div></div>' +
+      '<div><div class="kv"><span>القيمة التسويقية</span><b class="ok">' + ID.fmt(c.market) + ' جم</b></div><div class="kv"><span>رأس المال</span><b>' + ID.fmt(c.cap) + ' جم</b></div><div class="kv"><span>الإيرادات السنوية</span><b>' + ID.fmt(c.rev) + ' جم</b></div><div class="kv"><span>صافي الربح (' + c.margin + '%)</span><b>' + ID.fmt(c.profit) + ' جم</b></div><div class="kv"><span>نمو سنوي</span><b class="' + (c.growth >= 0 ? 'ok' : 'bad') + '">' + (c.growth >= 0 ? '+' : '') + c.growth + '%</b></div></div>' +
+      '<div><div class="kv"><span>ضريبة الأرباح (22.5%)</span><b>' + ID.fmt(c.corp) + ' جم</b></div><div class="kv"><span>ضريبة القيمة المضافة (14%)</span><b>' + ID.fmt(c.vat) + ' جم</b></div><div class="kv"><span>إجمالي الضرائب ' + c.yr + '</span><b>' + ID.fmt(c.total) + ' جم</b></div><div class="kv"><span>المسدد</span><b class="ok">' + ID.fmt(c.paid) + ' جم</b></div><div class="kv"><span>المستحق</span><b class="' + (c.due ? 'bad' : 'ok') + '">' + ID.fmt(c.due) + ' جم</b></div><div class="kv"><span>آخر إقرار</span><b>' + c.lastReturn + '</b></div></div></div>' +
+      '<h4 style="margin-top:12px">أعمال الشركة</h4><ul>' + c.acts.map(a => '<li>' + e(a) + '</li>').join('') + '</ul>' +
+      '<div class="btn-row">' + (c.due ? '<button class="button sm" data-pay="' + i + '">💳 سداد المستحق (' + ID.fmt(c.due) + ' جم)</button>' : '') + '<button class="button outline sm" data-ret="' + i + '">📄 تقديم إقرار ضريبي</button><button class="button ghost sm" data-rm="' + i + '">🗑️ إزالة</button></div></section>').join('') : '<div class="box empty"><span class="em">🏢</span><h3>لا توجد شركات مضافة</h3><p>اضغط «إضافة شركة» وأدخل اسم الشركة ورقمها الضريبي لتظهر بياناتها وقيمتها وضرائبها وأعمالها.</p></div>';
+    $('cmpList')._L = L;
+  }
+  $('addCmp').onclick = () => {
+    if (u.age < 18) return ID.toast('إضافة الشركات متاحة لمن بلغ 18 سنة.', true);
+    ID.dialog({ title: 'إضافة شركة', note: 'اكتب اسم الشركة والرقم الضريبي (9 أرقام) لعرض بياناتها.', fields: [
+      { id: 'name', label: 'اسم الشركة', test: v => v.length >= 3 && v.length <= 60, msg: 'اكتب اسم الشركة (3 أحرف على الأقل).' },
+      { id: 'tax', label: 'الرقم الضريبي (9 أرقام)', inputmode: 'numeric', placeholder: '123-456-789', test: v => { const n = Gov.normTax(v); return n.length === 9 && !st.companies.some(c => c.tax === n); }, msg: 'اكتب 9 أرقام (ولم تُضَف الشركة من قبل).' }], ok: 'إضافة الشركة' }).then(v => {
+      if (!v) return; const tax = Gov.normTax(v.tax); st.companies.push({ name: v.name, tax, t: Date.now() }); ID.log('إضافة شركة', v.name + ' - ' + Gov.fmtTax(tax)); ID.save(); renderCmp(); ID.toast('تمت إضافة الشركة وعرض بياناتها'); const f1 = $('cmpList').lastElementChild; if (f1) f1.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+  };
+  $('cmpList').addEventListener('click', ev => {
+    const L = $('cmpList')._L, p = ev.target.closest('[data-pay]'), r = ev.target.closest('[data-ret]'), x = ev.target.closest('[data-rm]');
+    if (p) { const c = L[p.dataset.pay]; payTaxCmp(c); }
+    if (r) { const c = L[r.dataset.ret]; Gov.run({ id: 'ret', t: 'إقرار ضريبي - ' + c.name, d: 'تقديم الإقرار الضريبي السنوي للشركة.', fee: 0, org: ORG, extra: () => [['الشركة', c.name], ['الرقم الضريبي', c.taxFmt], ['السنة الضريبية', c.yr], ['صافي الربح المُقر به', ID.fmt(c.profit) + ' جم']], steps: ['تم استلام الإقرار', 'الفحص الآلي', 'تم قبول الإقرار'] }, { refresh: renderCmp }); }
+    if (x) { const c = L[x.dataset.rm]; ID.confirm('إزالة الشركة', 'هل تريد إزالة «' + c.name + '» من ملفك؟', 'إزالة', true).then(ok => { if (!ok) return; st.companies = st.companies.filter(k => k.tax !== c.tax); ID.save(); renderCmp(); }); }
+  });
+  function payTaxCmp(c) { ID.confirm('سداد ضرائب شركة', 'سيتم خصم ' + ID.fmt(c.due) + ' جم من حسابك الجاري لسداد ضرائب «' + c.name + '».', 'ادفع الآن').then(ok => {
+    if (!ok) return; const r = ID.pay(c.due, 'سداد ضرائب شركة ' + c.name, { service: 'سداد ضرائب شركة', org: ORG, details: [['الشركة', c.name], ['الرقم الضريبي', c.taxFmt], ['السنة الضريبية', c.yr], ['ضريبة الأرباح', ID.fmt(c.corp) + ' جم'], ['القيمة المضافة', ID.fmt(c.vat) + ' جم']] });
+    if (!r.ok) return ID.toast(r.err, true); st.paid[c.key] = Date.now(); ID.save(); renderCmp(); }); }
+
+  /* ---------------- الاستثمار والجمارك (كما هو) ---------------- */
+  $('fx').textContent = ID.FX.toFixed(2);
+  $('egT').textContent = ID.fmt(f.egxTotal) + ''; $('glT').textContent = '$' + ID.fmt(f.globTotal);
+  const row = (s, cur) => '<tr><td>' + s.name + ' <small>(' + s.sym + ')</small></td><td class="r num">' + s.qty + '</td><td class="r num ' + (s.pl >= 0 ? 'ok' : 'bad') + '">' + (s.pl >= 0 ? '+' : '-') + cur + ID.fmt(Math.abs(s.pl)) + (cur ? '' : ' جم') + '</td></tr>';
+  const empty = '<tr><td colspan="3" class="muted">لا توجد استثمارات مسجلة.</td></tr>';
+  $('egR').innerHTML = f.egx.length ? f.egx.map(s => row(s, '')).join('') : empty;
+  $('glR').innerHTML = f.glob.length ? f.glob.map(s => row(s, '$')).join('') : empty;
+  const c = f.chart, mn = Math.min.apply(null, c), mx = Math.max.apply(null, c), pts = c.map((v, i) => (i / (c.length - 1) * 300).toFixed(1) + ',' + (95 - (v - mn) / (mx - mn || 1) * 85).toFixed(1)).join(' ');
+  $('spark').innerHTML = f.egx.length ? '<polyline points="0,100 ' + pts + ' 300,100" fill="#e9b44c22" stroke="none"/><polyline points="' + pts + '" fill="none" stroke="#e9b44c" stroke-width="2" vector-effect="non-scaling-stroke"/>' : '';
+  $('trade').onclick = () => ID.toast('منصة التداول العالمي غير متاحة في النسخة التجريبية.', true);
+  function customs() {
+    const paid = !!st.customsPaid;
+    $('customs').innerHTML = '<p>شحنات واردة برقمك القومي: <b>(1) شحنة</b></p><p class="muted" style="font-size:.9rem">وصف: ' + f.ship + '</p><div class="kv"><span>الرسوم الجمركية</span><b>' + ID.fmt(f.customsFee) + ' جم</b></div><div class="kv"><span>الحالة</span>' + (paid ? '<span class="pill ok">تم السداد والإفراج</span>' : '<span class="pill warn">بانتظار السداد</span>') + '</div>' + (paid ? '' : '<div class="btn-row"><button class="button blue sm" id="payCus" type="button">سداد الرسوم والإفراج</button></div>');
+    const b = $('payCus'); if (b) b.onclick = () => ID.confirm('سداد الرسوم الجمركية', 'سيتم خصم ' + ID.fmt(f.customsFee) + ' جم من حسابك الجاري.', 'سداد').then(ok => { if (!ok) return; const r = ID.pay(f.customsFee, 'رسوم جمركية', { service: 'رسوم جمركية', org: 'مصلحة الجمارك المصرية', details: [['الشحنة', f.ship]] }); if (!r.ok) return ID.toast(r.err, true); st.customsPaid = Date.now(); ID.save(); customs(); });
+  }
+  customs();
+  Gov.grid($('svcGrid'), GL, { refresh: renderTax });
+  Gov.tabs(document, { tax: {}, companies: { on: renderCmp }, svc: { on: () => Gov.requestsList($('reqs'), r => /الضرائب/.test(r.org)) }, invest: {} }, 'tax');
+  renderTax(); renderCmp();
+});
+</script>
+</body>
+</html>
